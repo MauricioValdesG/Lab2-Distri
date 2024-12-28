@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  local-node-1:
+    build:
+      context: ./local_node
+    container_name: local-node-1-container
+    network_mode: host
+    environment:
+      - NODE_NAME=Node1 # Variable de entorno para identificar el nodo
+
+  local-node-2:
+    build:
+      context: ./local_node
+    container_name: local-node-2-container
+    network_mode: host
+    environment:
+      - NODE_NAME=Node2 # Variable de entorno para identificar el nodo
+
+  central-node:
+    build:
+      context: ./central_node
+    container_name: central-node-container
+    network_mode: host

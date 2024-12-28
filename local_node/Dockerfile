@@ -1,0 +1,14 @@
+FROM python:3.9-slim
+
+# Crear el directorio de trabajo
+WORKDIR /app
+
+# Copiar los archivos necesarios
+COPY simulation_local_node.py /app/
+COPY simulation_sensor.py /app/
+
+# Instalar las dependencias necesarias
+RUN pip install paho-mqtt numpy
+
+# Comando para ejecutar el nodo local
+CMD ["python", "simulation_local_node.py"]
