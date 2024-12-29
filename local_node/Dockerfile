@@ -8,7 +8,7 @@ COPY simulation_local_node.py /app/
 COPY simulation_sensor.py /app/
 
 # Instalar las dependencias necesarias
-RUN pip install paho-mqtt numpy
+RUN pip install paho-mqtt numpy traci
 
 # Comando para ejecutar el nodo local
 CMD ["python", "simulation_local_node.py"]

@@ -1,23 +1,38 @@
 version: "3.9"
-services:
-  local-node-1:
-    build:
-      context: ./local_node
-    container_name: local-node-1-container
-    network_mode: host
-    environment:
-      - NODE_NAME=Node1 # Variable de entorno para identificar el nodo
 
-  local-node-2:
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt-broker
+    network_mode: host # Usa la red del host para compatibilidad con los nodos
+
+  sumo-simulator:
+    build:
+      context: .
+      dockerfile: ./sumo_examples/Dockerfile
+    container_name: sumo-simulator
+    network_mode: host
+    volumes:
+      - ./sumo_examples:/sumo/examples
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    command:
+      ["sumo-gui", "--remote-port", "8813", "-c", "/sumo/examples/test.sumocfg"]
+
+  local-node:
     build:
       context: ./local_node
-    container_name: local-node-2-container
-    network_mode: host
+    container_name: local-node-container
+    network_mode: host # Los nodos se conectan al broker en localhost
     environment:
-      - NODE_NAME=Node2 # Variable de entorno para identificar el nodo
+      - NODE_NAME=local-node
 
   central-node:
     build:
       context: ./central_node
     container_name: central-node-container
     network_mode: host
+    environment:
+      - MQTT_BROKER=localhost
