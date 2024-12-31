@@ -5,7 +5,6 @@ WORKDIR /app
 
 # Copiar los archivos necesarios
 COPY simulation_local_node.py /app/
-COPY simulation_sensor.py /app/
 
 # Instalar las dependencias necesarias
 RUN pip install paho-mqtt numpy traci

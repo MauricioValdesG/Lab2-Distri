@@ -4,35 +4,147 @@ services:
   mqtt-broker:
     image: eclipse-mosquitto:latest
     container_name: mqtt-broker
-    network_mode: host # Usa la red del host para compatibilidad con los nodos
-
-  sumo-simulator:
-    build:
-      context: .
-      dockerfile: ./sumo_examples/Dockerfile
-    container_name: sumo-simulator
     network_mode: host
-    volumes:
-      - ./sumo_examples:/sumo/examples
-      - /tmp/.X11-unix:/tmp/.X11-unix
-    environment:
-      - DISPLAY=${DISPLAY}
-      - QT_X11_NO_MITSHM=1
-    command:
-      ["sumo-gui", "--remote-port", "8813", "-c", "/sumo/examples/test.sumocfg"]
-
-  local-node:
-    build:
-      context: ./local_node
-    container_name: local-node-container
-    network_mode: host # Los nodos se conectan al broker en localhost
-    environment:
-      - NODE_NAME=local-node
+    ports:
+      - "1883:1883"
+      - "9001:9001"
 
   central-node:
     build:
       context: ./central_node
+      dockerfile: Dockerfile
     container_name: central-node-container
     network_mode: host
+    depends_on:
+      - mqtt-broker
     environment:
-      - MQTT_BROKER=localhost
+      - MQTT_BROKER_HOST=localhost
+      - MQTT_BROKER_PORT=1883
+
+  local-node-1:
+    build:
+      context: ./local_node
+      dockerfile: Dockerfile
+    container_name: local-node-1-container
+    network_mode: host
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER_HOST=localhost
+      - MQTT_BROKER_PORT=1883
+      - NODE_ID=local-node-1
+      - TOPIC=sensor/lidar/1
+      - CLIENT_ORDER=1
+
+  local-node-2:
+    build:
+      context: ./local_node
+      dockerfile: Dockerfile
+    container_name: local-node-2-container
+    network_mode: host
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER_HOST=localhost
+      - MQTT_BROKER_PORT=1883
+      - NODE_ID=local-node-2
+      - TOPIC=sensor/lidar/2
+      - CLIENT_ORDER=2
+
+  local-node-3:
+    build:
+      context: ./local_node
+      dockerfile: Dockerfile
+    container_name: local-node-3-container
+    network_mode: host
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER_HOST=localhost
+      - MQTT_BROKER_PORT=1883
+      - NODE_ID=local-node-3
+      - TOPIC=sensor/lidar/3
+      - CLIENT_ORDER=3
+
+  local-node-4:
+    build:
+      context: ./local_node
+      dockerfile: Dockerfile
+    container_name: local-node-4-container
+    network_mode: host
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER_HOST=localhost
+      - MQTT_BROKER_PORT=1883
+      - NODE_ID=local-node-4
+      - TOPIC=sensor/lidar/4
+      - CLIENT_ORDER=4
+
+  sensor-node-1:
+    build:
+      context: ./sensor_node
+      dockerfile: Dockerfile
+    container_name: sensor-node-1-container
+    network_mode: host
+    depends_on:
+      - mqtt-broker
+    environment:
+      - SUMO_HOST=host.docker.internal
+      - SUMO_PORT=8813
+      - MQTT_BROKER_HOST=localhost
+      - MQTT_BROKER_PORT=1883
+      - TOPIC=sensor/lidar/1
+      - CLIENT_ORDER=1
+      - SENSOR_INDEX=0
+
+  sensor-node-2:
+    build:
+      context: ./sensor_node
+      dockerfile: Dockerfile
+    container_name: sensor-node-2-container
+    network_mode: host
+    depends_on:
+      - mqtt-broker
+    environment:
+      - SUMO_HOST=host.docker.internal
+      - SUMO_PORT=8813
+      - MQTT_BROKER_HOST=localhost
+      - MQTT_BROKER_PORT=1883
+      - TOPIC=sensor/lidar/2
+      - CLIENT_ORDER=2
+      - SENSOR_INDEX=1
+
+  sensor-node-3:
+    build:
+      context: ./sensor_node
+      dockerfile: Dockerfile
+    container_name: sensor-node-3-container
+    network_mode: host
+    depends_on:
+      - mqtt-broker
+    environment:
+      - SUMO_HOST=host.docker.internal
+      - SUMO_PORT=8813
+      - MQTT_BROKER_HOST=localhost
+      - MQTT_BROKER_PORT=1883
+      - TOPIC=sensor/lidar/3
+      - CLIENT_ORDER=3
+      - SENSOR_INDEX=2
+
+  sensor-node-4:
+    build:
+      context: ./sensor_node
+      dockerfile: Dockerfile
+    container_name: sensor-node-4-container
+    network_mode: host
+    depends_on:
+      - mqtt-broker
+    environment:
+      - SUMO_HOST=host.docker.internal
+      - SUMO_PORT=8813
+      - MQTT_BROKER_HOST=localhost
+      - MQTT_BROKER_PORT=1883
+      - TOPIC=sensor/lidar/4
+      - CLIENT_ORDER=4
+      - SENSOR_INDEX=3
