@@ -1,3 +1,4 @@
+# simulation_local_node.py
 import paho.mqtt.client as mqtt
 import json
 import os
@@ -24,10 +25,26 @@ def on_message(client, userdata, msg):
         payload = msg.payload.decode("utf-8")
         data = json.loads(payload)
         print(f"[{NODE_ID}] Datos recibidos de {TOPIC}: {data}")
+
+        # Lógica para tomar decisiones basadas en datos
+        vehicle_count = data.get("vehicle_count", 0)
+        if vehicle_count > 5:
+            print("El semáforo debe cambiar a verde.")
+            send_decision_to_central(client, "cambiar_a_verde")
+        else:
+            print("El semáforo debe mantenerse en rojo.")
+            send_decision_to_central(client, "mantener_rojo")
+
     except json.JSONDecodeError as e:
         print(f"[{NODE_ID}] Error al procesar JSON: {e}")
     except Exception as e:
         print(f"[{NODE_ID}] Error inesperado: {e}")
+
+# Publicar decisiones tomadas al nodo central
+def send_decision_to_central(client, decision):
+    topic = "central_node/decisions"
+    client.publish(topic, json.dumps({"node_id": NODE_ID, "decision": decision}))
+    print(f"[{NODE_ID}] Decisión enviada al nodo central: {decision}")
 
 if __name__ == "__main__":
     try:
