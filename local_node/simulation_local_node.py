@@ -27,7 +27,7 @@ def on_message(client, userdata, msg):
         print(f"[{NODE_ID}] Datos recibidos de {TOPIC}: {data}")
 
         # Lógica para tomar decisiones basadas en datos
-        vehicle_count = data.get("vehicle_count", 0)
+        vehicle_count = int(data.get("vehicles_detected", 0))
         if vehicle_count > 5:
             print("El semáforo debe cambiar a verde.")
             send_decision_to_central(client, "cambiar_a_verde")

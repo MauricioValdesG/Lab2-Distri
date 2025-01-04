@@ -59,8 +59,8 @@ def verificar_sensores_inactivos():
         tiempo_actual = time.time()
         cambios = False
         for sensor_id, ultimo_tiempo in ultimo_tiempo_sensores.items():
-            # Si han pasado más de 30 segundos sin recibir datos, marcar como inactivo
-            if tiempo_actual - ultimo_tiempo > 30 and estado_sensores[sensor_id]:
+            # Si han pasado más de 15 segundos sin recibir datos, marcar como inactivo
+            if tiempo_actual - ultimo_tiempo > 3 and estado_sensores[sensor_id]:
                 estado_sensores[sensor_id] = False
                 print(f"Sensor {sensor_id} marcado como inactivo.")
                 cambios = True
@@ -69,7 +69,7 @@ def verificar_sensores_inactivos():
         if cambios:
             print("Enviando actualizaciones al frontend por sensores inactivos.")
             socketio.emit('estadoSensores', estado_sensores)
-        time.sleep(1)  # Revisar cada 1 segundos
+        time.sleep(2)  # Revisar cada 15 segundos
 
 
 def iniciar_mqtt():

@@ -5,7 +5,7 @@ import time
 import json
 
 # Variables de entorno
-SUMO_HOST = os.getenv("SUMO_HOST", "host.docker.internal")
+SUMO_HOST = os.getenv("SUMO_HOST", "localhost")
 SUMO_PORT = int(os.getenv("SUMO_PORT", 8813))
 BROKER_ADDRESS = os.getenv("MQTT_BROKER_HOST", "localhost")
 BROKER_PORT = int(os.getenv("MQTT_BROKER_PORT", 1883))
@@ -72,7 +72,7 @@ def run_simulation(client, traffic_light_id):
                     print(f"Error al publicar datos en {topic}: {result.rc}")
             else:
                 print("Cliente MQTT no conectado. Reintentando...")
-            time.sleep(0.1)
+            time.sleep(0.001)
 
     except Exception as e:
         print(f"Error durante la simulación: {e}")
