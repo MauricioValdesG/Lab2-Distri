@@ -43,6 +43,15 @@ services:
       - NODE_ID=local-node-1
       - TOPIC=sensor/lidar/1
       - CLIENT_ORDER=1
+      - FLASK_PORT=5000
+    ports:
+      - "5002:5000"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:5000/health || exit 1"]
+      interval: 10s
+      retries: 3
+      start_period: 5s
     networks:
       - my-network
 
@@ -59,6 +68,15 @@ services:
       - NODE_ID=local-node-2
       - TOPIC=sensor/lidar/2
       - CLIENT_ORDER=2
+      - FLASK_PORT=5000
+    ports:
+      - "5003:5000"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:5000/health || exit 1"]
+      interval: 10s
+      retries: 3
+      start_period: 5s
     networks:
       - my-network
 
@@ -75,6 +93,15 @@ services:
       - NODE_ID=local-node-3
       - TOPIC=sensor/lidar/3
       - CLIENT_ORDER=3
+      - FLASK_PORT=5000
+    ports:
+      - "5004:5000"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:5000/health || exit 1"]
+      interval: 10s
+      retries: 3
+      start_period: 5s
     networks:
       - my-network
 
@@ -91,6 +118,15 @@ services:
       - NODE_ID=local-node-4
       - TOPIC=sensor/lidar/4
       - CLIENT_ORDER=4
+      - FLASK_PORT=5000
+    ports:
+      - "5005:5000"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:5000/health || exit 1"]
+      interval: 10s
+      retries: 3
+      start_period: 5s
     networks:
       - my-network
 

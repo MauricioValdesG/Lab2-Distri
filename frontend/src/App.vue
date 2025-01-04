@@ -1,11 +1,15 @@
 <template>
   <div id="app">
     <header class="header">
-      <h1>Estado de los Sensores</h1>
+      <h1>Estado de los Sensores y Nodos Locales</h1>
     </header>
 
     <main class="main-content">
+      <!-- Mensaje de error si falla la conexión -->
       <p v-if="error" class="error">{{ error }}</p>
+
+      <!-- Tabla de Sensores -->
+      <h2>Estado de Sensores</h2>
       <table v-if="Object.keys(sensores).length > 0" class="sensor-table">
         <thead>
           <tr>
@@ -23,11 +27,31 @@
         </tbody>
       </table>
       <p v-else class="no-data">No hay datos de sensores disponibles.</p>
+
+      <!-- Tabla de Nodos Locales -->
+      <h2>Estado de Nodos Locales</h2>
+      <table v-if="Object.keys(nodos).length > 0" class="sensor-table">
+        <thead>
+          <tr>
+            <th>ID Nodo</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(estado, id) in nodos" :key="id">
+            <td>{{ id }}</td>
+            <td :class="estado === 'Activo' ? 'activo' : 'inactivo'">
+              {{ estado }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else class="no-data">No hay datos de nodos locales disponibles.</p>
     </main>
 
     <footer class="footer">
       <p>
-        Monitoreo en tiempo real de trafico urbano - Proyecto Universidad de
+        Monitoreo en tiempo real de tráfico urbano - Proyecto Universidad de
         Santiago de Chile
       </p>
     </footer>
@@ -41,6 +65,7 @@ export default {
   data() {
     return {
       sensores: {},
+      nodos: {},
       error: null,
     };
   },
@@ -54,93 +79,105 @@ export default {
         this.error = "No se pudo conectar al backend.";
       }
     },
+    // Obtener el estado de los nodos locales desde varios endpoints
+    async obtenerEstadoNodos() {
+      const nodosUrls = {
+        "Nodo 1": "http://localhost:5002/health",
+        "Nodo 2": "http://localhost:5003/health",
+        "Nodo 3": "http://localhost:5004/health",
+        "Nodo 4": "http://localhost:5005/health",
+      };
+
+      for (const [id, url] of Object.entries(nodosUrls)) {
+        try {
+          const response = await axios.get(url);
+          this.nodos[id] = response.status === 200 ? "Activo" : "Inactivo";
+        } catch (err) {
+          console.error(`Error al obtener el estado del ${id}:`, err);
+          this.nodos[id] = "Inactivo";
+        }
+      }
+    },
   },
   created() {
     this.obtenerEstadoSensores();
+    this.obtenerEstadoNodos();
+    setInterval(() => {
+      this.obtenerEstadoSensores();
+      this.obtenerEstadoNodos();
+    }, 5000);
   },
 };
 </script>
 
 <style>
-body {
-  margin: 0;
-  font-family: "Arial", sans-serif;
-  background-color: #f3f4f6;
-  color: #2c3e50;
-}
-
+/* Estilo General */
 .header {
-  background-color: #005f73;
-  color: #ffffff;
   text-align: center;
-  padding: 20px 0;
-  font-size: 24px;
-  font-weight: bold;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.main-content {
   padding: 20px;
-  max-width: 900px;
-  margin: 40px auto;
-  background: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
+  background-color: #0f6b7d; /* Azul petróleo */
+  color: white;
 }
 
+/* Contenedor principal */
+.main-content {
+  margin: 20px auto;
+  width: 60%;
+  text-align: center;
+}
+
+/* Estilo de las tablas */
 .sensor-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
+  margin-top: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-.sensor-table th {
-  background-color: #0a9396;
-  color: #ffffff;
-  text-align: center;
-  padding: 12px;
-  font-size: 16px;
+/* Encabezado de las tablas */
+.sensor-table thead {
+  background-color: #0f6b7d; /* Azul petróleo */
+  color: white;
+  font-size: 1.2rem;
 }
 
+/* Celdas */
+.sensor-table th,
 .sensor-table td {
-  padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 15px;
+  border: 1px solid #ddd;
   text-align: center;
-  font-size: 14px;
 }
 
-.sensor-table .activo {
-  color: #007f5f;
+/* Estados Activo e Inactivo */
+.activo {
+  color: green;
   font-weight: bold;
 }
 
-.sensor-table .inactivo {
-  color: #ae2012;
+.inactivo {
+  color: #b22222; /* Rojo oscuro */
   font-weight: bold;
+}
+
+/* Mensajes de error y sin datos */
+.error {
+  color: red;
+  font-weight: bold;
+  margin-top: 20px;
 }
 
 .no-data {
   text-align: center;
-  color: #64748b;
-  font-size: 16px;
-  margin-top: 20px;
+  font-style: italic;
 }
 
+/* Footer */
 .footer {
   text-align: center;
-  background-color: #005f73;
-  color: white;
-  padding: 10px 0;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.error {
-  color: #e63946;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
+  padding: 20px;
+  font-size: 0.9rem;
+  color: #555;
 }
 </style>
