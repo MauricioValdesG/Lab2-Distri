@@ -7,7 +7,7 @@ import json
 # Variables de entorno
 SUMO_HOST = os.getenv("SUMO_HOST", "localhost")
 SUMO_PORT = int(os.getenv("SUMO_PORT", 8813))
-BROKER_ADDRESS = os.getenv("MQTT_BROKER_HOST", "localhost")
+BROKER_ADDRESS = os.getenv("MQTT_BROKER_HOST", "mqtt")
 BROKER_PORT = int(os.getenv("MQTT_BROKER_PORT", 1883))
 TOPIC = os.getenv("TOPIC", "sensor/lidar/")
 SENSOR_INDEX = int(os.getenv("SENSOR_INDEX", 0))
@@ -38,6 +38,15 @@ def seleccionar_semaforo():
         print(f"Error: No hay suficiente semáforos para el índice {SENSOR_INDEX}.")
         exit(1)
     return traffic_lights[SENSOR_INDEX]
+
+def configure_mqtt_client():
+    # Configurar TLS con los certificados
+    client.tls_set(
+        ca_certs="/certs/ca.crt",
+        certfile="/certs/server.crt",
+        keyfile="/certs/server.key"
+    )
+    return client
 
 # Función principal para publicar datos
 def run_simulation(client, traffic_light_id):
@@ -85,6 +94,12 @@ if __name__ == "__main__":
     traffic_light_id = seleccionar_semaforo()
 
     client = mqtt.Client()
+    # Configurar la seguridad TLS con los certificados
+    client.tls_set(
+        ca_certs="/certs/ca.crt",
+        certfile="/certs/server.crt",
+        keyfile="/certs/server.key"
+    )
     client.on_connect = on_connect
 
     try:

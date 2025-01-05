@@ -10,9 +10,11 @@ services:
     container_name: mqtt-broker
     ports:
       - "1883:1883"
+      - "8883:8883"
       - "9001:9001"
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./certs:/mosquitto/config/certs
     networks:
       - my-network
 
@@ -25,8 +27,10 @@ services:
       - mqtt-broker
     environment:
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
       - TOPIC=central_node/decisions
+    volumes:
+      - ./certs:/certs
     networks:
       - my-network
 
@@ -39,11 +43,13 @@ services:
       - mqtt-broker
     environment:
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
       - NODE_ID=local-node-1
       - TOPIC=sensor/lidar/1
       - CLIENT_ORDER=1
       - FLASK_PORT=5000
+    volumes:
+      - ./certs:/certs
     ports:
       - "5002:5000"
     restart: always
@@ -64,11 +70,13 @@ services:
       - mqtt-broker
     environment:
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
       - NODE_ID=local-node-2
       - TOPIC=sensor/lidar/2
       - CLIENT_ORDER=2
       - FLASK_PORT=5000
+    volumes:
+      - ./certs:/certs
     ports:
       - "5003:5000"
     restart: always
@@ -89,11 +97,13 @@ services:
       - mqtt-broker
     environment:
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
       - NODE_ID=local-node-3
       - TOPIC=sensor/lidar/3
       - CLIENT_ORDER=3
       - FLASK_PORT=5000
+    volumes:
+      - ./certs:/certs
     ports:
       - "5004:5000"
     restart: always
@@ -114,11 +124,13 @@ services:
       - mqtt-broker
     environment:
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
       - NODE_ID=local-node-4
       - TOPIC=sensor/lidar/4
       - CLIENT_ORDER=4
       - FLASK_PORT=5000
+    volumes:
+      - ./certs:/certs
     ports:
       - "5005:5000"
     restart: always
@@ -141,10 +153,12 @@ services:
       - SUMO_HOST=host.docker.internal # Conexión al host local
       - SUMO_PORT=8813
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
       - TOPIC=sensor/lidar/1
       - CLIENT_ORDER=1
       - SENSOR_INDEX=0
+    volumes:
+      - ./certs:/certs
     networks:
       - my-network
 
@@ -159,10 +173,12 @@ services:
       - SUMO_HOST=host.docker.internal # Conexión al host local
       - SUMO_PORT=8813
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
       - TOPIC=sensor/lidar/2
       - CLIENT_ORDER=2
       - SENSOR_INDEX=1
+    volumes:
+      - ./certs:/certs
     networks:
       - my-network
 
@@ -177,10 +193,12 @@ services:
       - SUMO_HOST=host.docker.internal # Conexión al host local
       - SUMO_PORT=8813
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
       - TOPIC=sensor/lidar/3
       - CLIENT_ORDER=3
       - SENSOR_INDEX=2
+    volumes:
+      - ./certs:/certs
     networks:
       - my-network
 
@@ -195,10 +213,12 @@ services:
       - SUMO_HOST=host.docker.internal # Conexión al host local
       - SUMO_PORT=8813
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
       - TOPIC=sensor/lidar/4
       - CLIENT_ORDER=4
       - SENSOR_INDEX=3
+    volumes:
+      - ./certs:/certs
     networks:
       - my-network
 
@@ -225,7 +245,9 @@ services:
       - mqtt-broker
     environment:
       - MQTT_BROKER_HOST=mqtt-broker
-      - MQTT_BROKER_PORT=1883
+      - MQTT_BROKER_PORT=8883
+    volumes:
+      - ./certs:/certs
     networks:
       - my-network
     ports:

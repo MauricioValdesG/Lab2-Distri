@@ -46,9 +46,14 @@ if __name__ == "__main__":
 
         # Crear cliente MQTT
         client = mqtt.Client()
+        # Configurar la seguridad TLS con los certificados
+        client.tls_set(
+            ca_certs="/certs/ca.crt",
+            certfile="/certs/server.crt",
+            keyfile="/certs/server.key"
+        )
         client.on_connect = on_connect
         client.on_message = on_message
-
         # Conectar al broker
         print(f"[Central Node] Conectando al broker MQTT en {BROKER_ADDRESS}:{BROKER_PORT}")
         client.connect(BROKER_ADDRESS, BROKER_PORT, 60)
