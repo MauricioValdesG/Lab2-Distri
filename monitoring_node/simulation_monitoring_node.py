@@ -31,7 +31,7 @@ def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Conexión exitosa al broker MQTT")
         for topic in TOPICS:
-            client.subscribe(topic)
+            client.subscribe(topic, qos=1)
             print(f"Suscrito al tópico: {topic}")
     else:
         print(f"Conexión fallida con código {rc}")

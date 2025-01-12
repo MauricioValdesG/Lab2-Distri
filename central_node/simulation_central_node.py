@@ -22,7 +22,7 @@ FLASK_PORT = int(os.getenv("FLASK_PORT", 5000))
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("[Central Node] Conexión exitosa al broker MQTT")
-        client.subscribe(TOPIC)
+        client.subscribe(TOPIC, qos=1)
         print(f"[Central Node] Suscrito al tema {TOPIC}")
     else:
         print(f"[Central Node] Conexión fallida con código {rc}")

@@ -23,7 +23,7 @@ FLASK_PORT = int(os.getenv("FLASK_PORT", 5000))
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print(f"[{NODE_ID}] Conexión exitosa al broker MQTT")
-        client.subscribe(TOPIC)
+        client.subscribe(TOPIC, qos=1)
         print(f"[{NODE_ID}] Suscrito al tema {TOPIC}")
     else:
         print(f"[{NODE_ID}] Conexión fallida con código {rc}")
@@ -57,7 +57,7 @@ def on_message(client, userdata, msg):
 # Publicar decisiones tomadas al nodo central
 def send_decision_to_central(client, decision):
     topic = "central_node/decisions"
-    client.publish(topic, json.dumps({"node_id": NODE_ID, "decision": decision}))
+    client.publish(topic, json.dumps({"node_id": NODE_ID, "decision": decision}), qos=1, retain=True)
     print(f"[{NODE_ID}] Decisión enviada al nodo central: {decision}")
 
 if __name__ == "__main__":

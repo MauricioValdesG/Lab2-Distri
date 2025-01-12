@@ -74,7 +74,7 @@ def run_simulation(client, traffic_light_id):
 
             topic = f"{TOPIC}"
             if client.is_connected():
-                result = client.publish(topic, json.dumps(sensor_data))
+                result = client.publish(topic, json.dumps(sensor_data), qos=1, retain=True)
                 if result.rc == mqtt.MQTT_ERR_SUCCESS:
                     print(f"Datos publicados correctamente en {topic}: {sensor_data}")
                 else:

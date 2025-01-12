@@ -15,6 +15,7 @@ services:
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./certs:/mosquitto/config/certs
+      - mosquitto_data:/mosquitto/data
     networks:
       - my-network
 
@@ -261,3 +262,6 @@ services:
       - my-network
     ports:
       - "5001:5001"
+
+volumes:
+  mosquitto_data:
