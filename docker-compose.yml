@@ -19,6 +19,40 @@ services:
     networks:
       - my-network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090" # Interfaz web de Prometheus
+    networks:
+      - my-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000" # Interfaz de Grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - my-network
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  mqtt2prometheus:
+    image: hikhvar/mqtt2prometheus:latest
+    container_name: mqtt2prometheus
+    ports:
+      - "9641:9641"
+    volumes:
+      - ./config.yaml:/config.yaml
+      - ./certs:/certs
+    restart: always
+    networks:
+      - my-network
+
   central-node:
     build:
       context: ./central_node
@@ -265,3 +299,4 @@ services:
 
 volumes:
   mosquitto_data:
+  grafana_data:
