@@ -66,10 +66,16 @@ def run_simulation(client, traffic_light_id):
 
             position = traci.junction.getPosition(traffic_light_id)
             vehicles = traci.junction.getContextSubscriptionResults(traffic_light_id)
+            queue_length = traci.trafficlight.getServedVehicleCount(traffic_light_id)
+            inflow = traci.edge.getLastStepVehicleNumber(traffic_light_id)
+            outflow = traci.edge.getLastStepHaltingNumber(traffic_light_id)
 
             sensor_data = {
                 "position": position,
-                "vehicles_detected": len(vehicles) if vehicles else 0
+                "vehicles_detected": len(vehicles) if vehicles else 0,
+                "queue_length": queue_length,
+                "inflow": inflow,
+                "outflow": outflow
             }
 
             topic = f"{TOPIC}"

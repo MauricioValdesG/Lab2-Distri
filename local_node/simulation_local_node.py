@@ -1,4 +1,3 @@
-# simulation_local_node.py
 import paho.mqtt.client as mqtt
 import json
 import os
@@ -48,6 +47,15 @@ def on_message(client, userdata, msg):
         else:
             print("El semáforo debe mantenerse en rojo.")
             send_decision_to_central(client, "mantener_rojo")
+        
+        # Lógica para enviar datos al nodo central usando información del sensor
+        queue_length = data.get("queue_length", 0)
+        inflow = data.get("inflow", 0)
+        outflow = data.get("outflow", 0)
+        vehicles_detected = int(data.get("vehicles_detected", 0))
+
+        # Enviar datos procesados al nodo central
+        send_traffic_data_to_central(client, queue_length, inflow, outflow, vehicles_detected)
 
     except json.JSONDecodeError as e:
         print(f"[{NODE_ID}] Error al procesar JSON: {e}")
@@ -59,6 +67,19 @@ def send_decision_to_central(client, decision):
     topic = "central_node/decisions"
     client.publish(topic, json.dumps({"node_id": NODE_ID, "decision": decision}), qos=1, retain=True)
     print(f"[{NODE_ID}] Decisión enviada al nodo central: {decision}")
+
+# Publicar datos procesados al nodo central
+def send_traffic_data_to_central(client, queue_length, inflow, outflow, vehicles_detected):
+    topic = "central_node/decisions"
+    payload = {
+        "node_id": NODE_ID,
+        "queue_length": queue_length,
+        "inflow": inflow,
+        "outflow": outflow,
+        "vehicles_detected": vehicles_detected
+    }
+    client.publish(topic, json.dumps(payload), qos=1, retain=True)
+    print(f"[{NODE_ID}] Datos enviados al nodo central: {payload}")
 
 if __name__ == "__main__":
     try:
