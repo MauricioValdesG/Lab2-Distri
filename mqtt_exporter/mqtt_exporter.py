@@ -1,4 +1,4 @@
-from prometheus_client import start_http_server, Gauge, Counter
+from prometheus_client import start_http_server, Gauge, Counter, Histogram
 import paho.mqtt.client as mqtt
 import json
 import time
@@ -9,6 +9,7 @@ mqtt_sensors_active = Gauge('mqtt_sensors_active', 'Cantidad de sensores enviand
 mqtt_messages_sent_per_sensor = Counter('mqtt_messages_sent_per_sensor', 'Mensajes enviados por sensor', ['sensor_id'])
 mqtt_messages_received_central = Counter('mqtt_messages_received_central', 'Mensajes recibidos por el nodo central')
 mqtt_nodes_active = Gauge('mqtt_nodes_active', 'Cantidad de nodos locales enviando decisiones')
+mqtt_message_latency = Histogram('mqtt_message_latency_milliseconds', 'Latencia de los mensajes MQTT en milisegundos', ['sensor_id'])
 
 # Configuración del broker MQTT y certificados
 MQTT_BROKER = "mqtt-broker"
@@ -22,11 +23,14 @@ MQTT_TOPICS = [("sensor/lidar/#", 0), ("central_node/decisions", 0)]
 active_sensors = set()
 active_nodes = set()
 
+# Diccionario para almacenar el tiempo del último mensaje por sensor
+last_message_time = {}
+
 # Extraer información desde el tópico
 def extract_node_and_sensor(topic):
     parts = topic.split("/")
     if topic.startswith("sensor/lidar/"):
-        return "sensor", parts[-1]  # Ej: sensor/lidar/1 → (sensor, 1)
+        return "sensor", parts[-1]
     elif topic == "central_node/decisions":
         return "central_node", "decision"
     return "unknown_node", "unknown_sensor"
@@ -44,10 +48,17 @@ def on_connect(client, userdata, flags, rc):
 
 # Callback de recepción de mensajes
 def on_message(client, userdata, msg):
-    global active_sensors, active_nodes
+    global active_sensors, active_nodes, last_message_time
     try:
         payload = json.loads(msg.payload.decode('utf-8'))
         node_id, sensor_id = extract_node_and_sensor(msg.topic)
+
+        # Calcular latencia como diferencia entre mensajes consecutivos
+        received_time = time.time() * 1000  # Tiempo actual en milisegundos
+        if sensor_id in last_message_time:
+            latency = received_time - last_message_time[sensor_id]
+            mqtt_message_latency.labels(sensor_id=sensor_id).observe(latency)
+        last_message_time[sensor_id] = received_time
 
         # Si el mensaje es de un sensor
         if msg.topic.startswith("sensor/lidar/"):

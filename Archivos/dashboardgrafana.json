@@ -188,6 +188,130 @@
           }
         }
       }
+    },
+    {
+      "title": "Latencia de Mensajes Sensor 1",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(mqtt_message_latency_milliseconds_sum{sensor_id=\"1\"}[5m]) / rate(mqtt_message_latency_milliseconds_count{sensor_id=\"1\"}[5m])",
+          "legendFormat": "Sensor 1",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        }
+      }
+    },
+    {
+      "title": "Latencia de Mensajes Sensor 2",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(mqtt_message_latency_milliseconds_sum{sensor_id=\"2\"}[5m]) / rate(mqtt_message_latency_milliseconds_count{sensor_id=\"2\"}[5m])",
+          "legendFormat": "Sensor 2",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          }
+        }
+      }
+    },
+    {
+      "title": "Latencia de Mensajes Sensor 3",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(mqtt_message_latency_milliseconds_sum{sensor_id=\"3\"}[5m]) / rate(mqtt_message_latency_milliseconds_count{sensor_id=\"3\"}[5m])",
+          "legendFormat": "Sensor 3",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          }
+        }
+      }
+    },
+    {
+      "title": "Latencia de Mensajes Sensor 4",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(mqtt_message_latency_milliseconds_sum{sensor_id=\"4\"}[5m]) / rate(mqtt_message_latency_milliseconds_count{sensor_id=\"4\"}[5m])",
+          "legendFormat": "Sensor 4",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          }
+        }
+      }
     }
   ],
   "schemaVersion": 36,
