@@ -41,13 +41,14 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
 
-  mqtt2prometheus:
-    image: hikhvar/mqtt2prometheus:latest
+  mqtt-exporter:
+    build:
+      context: ./mqtt_exporter
+      dockerfile: Dockerfile
     container_name: mqtt2prometheus
     ports:
       - "9641:9641"
     volumes:
-      - ./config.yaml:/config.yaml
       - ./certs:/certs
     restart: always
     networks:
