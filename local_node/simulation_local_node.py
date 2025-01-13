@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import json
 import os
 import time
+import numpy as np
 from flask import Flask, jsonify
 from flask_socketio import SocketIO
 from flask_cors import CORS
@@ -18,6 +19,15 @@ NODE_ID = os.getenv("NODE_ID", "local-node")
 CLIENT_ORDER = int(os.getenv("CLIENT_ORDER", 1))  # Orden único para cada nodo
 FLASK_PORT = int(os.getenv("FLASK_PORT", 5000))
 
+# Configuración de ACO
+NUM_PHASES = 3
+ALPHA = 1.0
+BETA = 2.0
+EVAPORATION_RATE = 0.1
+Q = 100
+pheromones = np.ones(NUM_PHASES)
+traffic_conditions = np.zeros(NUM_PHASES)
+
 # Callback al conectar con el broker
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -32,6 +42,26 @@ def health_check():
     # Simplemente devuelve "Activo" si el contenedor está funcionando
     return jsonify({"status": "Activo"}), 200
 
+# ACO: Selección de fase
+def select_phase():
+    probabilities = [
+        (pheromones[phase] ** ALPHA) * (1 / (calculate_pressure(traffic_conditions[phase], inflow, outflow) + 1) ** BETA)
+        for phase in range(NUM_PHASES)
+    ]
+    total = sum(probabilities)
+    probabilities = [p / total for p in probabilities]
+    return np.random.choice(range(NUM_PHASES), p=probabilities)
+
+# ACO: Actualización de feromonas
+def update_pheromones(selected_phase, pressure):
+    for phase in range(NUM_PHASES):
+        pheromones[phase] *= (1 - EVAPORATION_RATE)
+    pheromones[selected_phase] += Q / (max(pressure + 1, 1))
+
+# ACO: Cálculo de presión
+def calculate_pressure(queue_length, outflow):
+    return sum(queue_length) - sum(outflow)
+
 # Callback al recibir un mensaje
 def on_message(client, userdata, msg):
     try:
@@ -39,34 +69,33 @@ def on_message(client, userdata, msg):
         data = json.loads(payload)
         print(f"[{NODE_ID}] Datos recibidos de {TOPIC}: {data}")
 
-        # Lógica para tomar decisiones basadas en datos
-        vehicle_count = int(data.get("vehicles_detected", 0))
-        if vehicle_count > 5:
-            print("El semáforo debe cambiar a verde.")
-            send_decision_to_central(client, "cambiar_a_verde")
-        else:
-            print("El semáforo debe mantenerse en rojo.")
-            send_decision_to_central(client, "mantener_rojo")
-        
-        # Lógica para enviar datos al nodo central usando información del sensor
-        queue_length = data.get("queue_length", 0)
-        inflow = data.get("inflow", 0)
-        outflow = data.get("outflow", 0)
+        # Extraer datos como valores escalares
+        queue_length = int(data.get("queue_length", 0))
+        outflow = int(data.get("outflow", 0))
         vehicles_detected = int(data.get("vehicles_detected", 0))
 
-        # Enviar datos procesados al nodo central
-        send_traffic_data_to_central(client, queue_length, inflow, outflow, vehicles_detected)
+        # Calcular presión y aplicar ACO
+        pressure = calculate_pressure(queue_length, outflow)
+        selected_phase = select_phase()
+        update_pheromones(selected_phase, pressure)
+
+        # Enviar decisión al nodo central
+        send_decision_to_central(client, selected_phase)
 
     except json.JSONDecodeError as e:
         print(f"[{NODE_ID}] Error al procesar JSON: {e}")
     except Exception as e:
         print(f"[{NODE_ID}] Error inesperado: {e}")
 
-# Publicar decisiones tomadas al nodo central
-def send_decision_to_central(client, decision):
+# Enviar decisión al nodo central
+def send_decision_to_central(client, selected_phase):
     topic = "central_node/decisions"
-    client.publish(topic, json.dumps({"node_id": NODE_ID, "decision": decision}), qos=1, retain=True)
-    print(f"[{NODE_ID}] Decisión enviada al nodo central: {decision}")
+    payload = {
+        "node_id": NODE_ID,
+        "selected_phase": selected_phase
+    }
+    client.publish(topic, json.dumps(payload), qos=1, retain=True)
+    print(f"[{NODE_ID}] Decisión enviada al nodo central: {payload}")
 
 # Publicar datos procesados al nodo central
 def send_traffic_data_to_central(client, queue_length, inflow, outflow, vehicles_detected):
