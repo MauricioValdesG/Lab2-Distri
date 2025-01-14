@@ -1,0 +1,319 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "prometheus",
+          "uid": null
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Monitoreo de Sensores y Nodos Locales MQTT",
+  "editable": true,
+  "panels": [
+    {
+      "title": "Cantidad de Sensores Activos",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "mqtt_sensors_active",
+          "legendFormat": "Sensores Activos",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 4,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": 0 },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Mensajes Recibidos por Nodo Central",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "increase(mqtt_messages_received_central_total[5m])",
+          "legendFormat": "Mensajes Nodo Central",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "title": "Mensajes Enviados por Sensor 1",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(mqtt_messages_sent_per_sensor_total{sensor_id=\"1\"}[5m]))",
+          "legendFormat": "Sensor 1",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        }
+      }
+    },
+    {
+      "title": "Mensajes Enviados por Sensor 2",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(mqtt_messages_sent_per_sensor_total{sensor_id=\"2\"}[5m]))",
+          "legendFormat": "Sensor 2",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          }
+        }
+      }
+    },
+    {
+      "title": "Mensajes Enviados por Sensor 3",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(mqtt_messages_sent_per_sensor_total{sensor_id=\"3\"}[5m]))",
+          "legendFormat": "Sensor 3",
+          "refId": "E"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          }
+        }
+      }
+    },
+    {
+      "title": "Mensajes Enviados por Sensor 4",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(mqtt_messages_sent_per_sensor_total{sensor_id=\"4\"}[5m]))",
+          "legendFormat": "Sensor 4",
+          "refId": "F"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          }
+        }
+      }
+    },
+    {
+      "title": "Latencia de Mensajes Sensor 1",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(mqtt_message_latency_milliseconds_sum{sensor_id=\"1\"}[5m]) / rate(mqtt_message_latency_milliseconds_count{sensor_id=\"1\"}[5m])",
+          "legendFormat": "Sensor 1",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        }
+      }
+    },
+    {
+      "title": "Latencia de Mensajes Sensor 2",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(mqtt_message_latency_milliseconds_sum{sensor_id=\"2\"}[5m]) / rate(mqtt_message_latency_milliseconds_count{sensor_id=\"2\"}[5m])",
+          "legendFormat": "Sensor 2",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          }
+        }
+      }
+    },
+    {
+      "title": "Latencia de Mensajes Sensor 3",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(mqtt_message_latency_milliseconds_sum{sensor_id=\"3\"}[5m]) / rate(mqtt_message_latency_milliseconds_count{sensor_id=\"3\"}[5m])",
+          "legendFormat": "Sensor 3",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
+          }
+        }
+      }
+    },
+    {
+      "title": "Latencia de Mensajes Sensor 4",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "rate(mqtt_message_latency_milliseconds_sum{sensor_id=\"4\"}[5m]) / rate(mqtt_message_latency_milliseconds_count{sensor_id=\"4\"}[5m])",
+          "legendFormat": "Sensor 4",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          }
+        }
+      }
+    }
+  ],
+  "schemaVersion": 36,
+  "version": 1
+}
