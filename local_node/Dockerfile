@@ -11,7 +11,7 @@ RUN apt update && apt install -y curl && rm -rf /var/lib/apt/lists/*
 COPY . /app
 
 # Instalar las dependencias necesarias de Python
-RUN pip install --no-cache-dir paho-mqtt flask flask_socketio flask_cors eventlet
+RUN pip install --no-cache-dir paho-mqtt flask flask_socketio flask_cors eventlet numpy
 
 # Exponer el puerto usado por Flask
 EXPOSE 5000
